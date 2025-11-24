@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model attendees {
+  id                Int             @id @default(autoincrement())
+  firstname         String          @db.VarChar(45)
+  lastname          String          @db.VarChar(45)
+  username          String          @db.VarChar(45)
+  email             String          @db.VarChar(255)
+  registration_code String          @db.VarChar(6)
+  login_token       String?         @db.VarChar(255)
+  registrations     registrations[]
+}
+
+model channels {
+  id       Int     @id @default(autoincrement())
+  event_id Int
+  name     String? @db.VarChar(45)
+  events   events  @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_channels_events1")
+  rooms    rooms[]
+
+  @@index([event_id], map: "fk_channels_events1_idx")
+}
+
+model event_tickets {
+  id               Int             @id @default(autoincrement())
+  event_id         Int
+  name             String?         @db.VarChar(45)
+  cost             Decimal?        @db.Decimal(9, 2)
+  special_validity String?         @db.VarChar(255)
+  events           events          @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_tickets_events")
+  registrations    registrations[]
+
+  @@index([event_id], map: "fk_tickets_events_idx")
+}
+
+model events {
+  id            Int             @id @default(autoincrement())
+  organizer_id  Int
+  name          String?         @db.VarChar(45)
+  slug          String?         @db.VarChar(45)
+  date          DateTime?       @db.Date
+  channels      channels[]
+  event_tickets event_tickets[]
+  organizers    organizers      @relation(fields: [organizer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_events_organizers1")
+
+  @@index([organizer_id], map: "fk_events_organizers1_idx")
+}
+
+model organizers {
+  id            Int      @id @default(autoincrement())
+  name          String   @db.VarChar(45)
+  slug          String   @db.VarChar(45)
+  email         String?  @db.VarChar(255)
+  password_hash String   @db.VarChar(255)
+  events        events[]
+}
+
+model registrations {
+  id                    Int                     @id @default(autoincrement())
+  attendee_id           Int
+  ticket_id             Int
+  registration_time     DateTime?               @db.DateTime(0)
+  attendees             attendees               @relation(fields: [attendee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_registrations_attendees1")
+  event_tickets         event_tickets           @relation(fields: [ticket_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_registrations_tickets1")
+  session_registrations session_registrations[]
+
+  @@index([attendee_id], map: "fk_registrations_attendees1_idx")
+  @@index([ticket_id], map: "fk_registrations_tickets1_idx")
+}
+
+model rooms {
+  id         Int        @id @default(autoincrement())
+  channel_id Int
+  name       String?    @db.VarChar(45)
+  capacity   Int?
+  channels   channels   @relation(fields: [channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rooms_channels1")
+  sessions   sessions[]
+
+  @@index([channel_id], map: "fk_rooms_channels1_idx")
+}
+
+model session_registrations {
+  id              Int           @id @default(autoincrement())
+  registration_id Int
+  session_id      Int
+  registrations   registrations @relation(fields: [registration_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_registrations_has_sessions_registrations1")
+  sessions        sessions      @relation(fields: [session_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_registrations_has_sessions_sessions1")
+
+  @@index([registration_id], map: "fk_registrations_has_sessions_registrations1_idx")
+  @@index([session_id], map: "fk_registrations_has_sessions_sessions1_idx")
+}
+
+model sessions {
+  id                    Int                     @id @default(autoincrement())
+  room_id               Int
+  title                 String                  @db.VarChar(255)
+  description           String?                 @db.MediumText
+  speaker               String?                 @db.VarChar(45)
+  start                 DateTime                @db.DateTime(0)
+  end                   DateTime                @db.DateTime(0)
+  type                  sessions_type
+  cost                  Decimal?                @db.Decimal(9, 2)
+  session_registrations session_registrations[]
+  rooms                 rooms                   @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sessions_rooms1")
+
+  @@index([room_id], map: "fk_sessions_rooms1_idx")
+}
+
+enum sessions_type {
+  talk
+  workshop
+}
