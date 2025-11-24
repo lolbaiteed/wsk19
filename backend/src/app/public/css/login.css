@@ -1,0 +1,17 @@
+.container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginMenu {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+}
+
+input {
+  text-align: center;
+}
