@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { AuthError } from '../../lib/errorClasses.js';
+import { AuthError } from '../lib/errorClasses.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
