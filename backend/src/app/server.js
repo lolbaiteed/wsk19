@@ -13,6 +13,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true } ));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -27,10 +28,7 @@ app.get('/', (_req, res) => {
 });
 
 app.get('{/*path}', (req, res) => {
-  const page = req.path.substring((1));
-  res.render(page, {}, () => {
-    res.render('notFound');
-  });
+  res.status(404).render('notFound');
 })
 
 export default app;

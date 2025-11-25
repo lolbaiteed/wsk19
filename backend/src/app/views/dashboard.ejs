@@ -5,11 +5,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
-  <!-- <link href="css/style.css" rel="stylesheet"> -->
+  <link href="/css/dashboard.css" rel="stylesheet">
 </head>
 
 <body>
-  <h1>dashboard</h1>
+  <script>
+    const received = <%- JSON.stringify(events); %>
+  </script>
+  <div class="container">
+    <div class="nav">
+      <div class="navLeft">
+        <h1>Event platform</h1>
+      </div>
+      <div class="navRight">
+        <h3>WorldSkills</h3>
+        <button type="button" id="logout">Sign out</button>
+      </div>
+    </div>
+    <div class="content"> 
+      <h1>Manage events</h1>
+      <br>
+      <div id="eventsBlock"></div>
+    </div>
+  </div>
+  <script src="/scripts/dashboard.js"></script>
 </body>
-
 </html>

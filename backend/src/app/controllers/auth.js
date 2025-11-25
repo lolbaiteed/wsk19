@@ -1,6 +1,9 @@
 import prisma from "../../lib/prisma.js";
+import jwt from 'jsonwebtoken';
 import { hashPassword, verifyHash } from "../../lib/hash.js";
 import { AuthError } from "../../lib/errorClasses.js";
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const login = async (req, res) => {
   try {
@@ -35,7 +38,16 @@ export const login = async (req, res) => {
 
     if (!passMatch) throw new AuthError("Password is not correct", 401);
 
-    res.redirect('/dashboard');
+    const token =  jwt.sign({userId: user.id}, JWT_SECRET, { expiresIn: '1d'});
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.redirect('/admin/dashboard');
 
   } catch (error) {
     if (error instanceof AuthError) {

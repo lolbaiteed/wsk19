@@ -1,0 +1,33 @@
+.nav {
+    display: flex;
+    flex-direction: row;
+    height: 6vh;
+    background-color: black;
+    justify-content: space-between;
+}
+
+.navLeft {
+    display: flex;
+    color: white;
+    padding-inline: 1vw;
+    background-color: gray;
+    height: 6vh;
+}
+
+.navLeft h1 {
+    align-self: center;
+}
+
+.navRight {
+    display: flex;
+    color: white;
+    width: 72vw;
+    justify-content: space-between;
+}
+
+#logout {
+    background: none;
+    border: none;
+    color: white;
+    margin-right: 1vw;
+}
