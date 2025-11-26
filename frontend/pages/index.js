@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function LoginForm({ onLoginSuccess }) {
     const [email, setEmail] = useState('');
@@ -12,16 +13,14 @@ export default function LoginForm({ onLoginSuccess }) {
         setLoading(true);
 
         try {
-            const resp = await fetch('http://localhost:3000/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({email: email, password: password}),
-            });
+            const response = await axios.post("http://localhost:3000/api/auth/login", 
+                {email, password},
+                {withCredentials: true}
+            );
 
+            const data = await response.data
 
-            const data = await resp.json();
-
-            if (resp.ok) {
+            if (response.status === 200) {
                 setEmail('');
                 setPassword('');
                 router.push('/admin/dashboard');
